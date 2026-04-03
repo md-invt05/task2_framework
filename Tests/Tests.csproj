@@ -1,0 +1,69 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <ResolveReferencesDependsOn>BuildDependencies;$(ResolveReferencesDependsOn)</ResolveReferencesDependsOn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" Version="6.0.4" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    <PackageReference Include="xunit" Version="2.9.2" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="ModuleContracts">
+      <HintPath>..\ModuleContracts\bin\$(Configuration)\$(TargetFramework)\ModuleContracts.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="ModuleEngine">
+      <HintPath>..\ModuleEngine\bin\$(Configuration)\$(TargetFramework)\ModuleEngine.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="CoreModule">
+      <HintPath>..\Plugins\CoreModule\bin\$(Configuration)\$(TargetFramework)\CoreModule.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="LoggingModule">
+      <HintPath>..\Plugins\LoggingModule\bin\$(Configuration)\$(TargetFramework)\LoggingModule.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="ValidationModule">
+      <HintPath>..\Plugins\ValidationModule\bin\$(Configuration)\$(TargetFramework)\ValidationModule.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="ExportModule">
+      <HintPath>..\Plugins\ExportModule\bin\$(Configuration)\$(TargetFramework)\ExportModule.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="ReportModule">
+      <HintPath>..\Plugins\ReportModule\bin\$(Configuration)\$(TargetFramework)\ReportModule.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <BuildProject Include="..\ModuleContracts\ModuleContracts.csproj" />
+    <BuildProject Include="..\ModuleEngine\ModuleEngine.csproj" />
+    <BuildProject Include="..\Plugins\CoreModule\CoreModule.csproj" />
+    <BuildProject Include="..\Plugins\LoggingModule\LoggingModule.csproj" />
+    <BuildProject Include="..\Plugins\ValidationModule\ValidationModule.csproj" />
+    <BuildProject Include="..\Plugins\ExportModule\ExportModule.csproj" />
+    <BuildProject Include="..\Plugins\ReportModule\ReportModule.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+  <Target Name="BuildDependencies" Condition="'$(DesignTimeBuild)' != 'true'">
+    <MSBuild Projects="@(BuildProject)"
+             Targets="Build"
+             Properties="Configuration=$(Configuration);TargetFramework=$(TargetFramework)" />
+  </Target>
+</Project>

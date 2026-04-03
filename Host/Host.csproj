@@ -1,0 +1,55 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <ResolveReferencesDependsOn>BuildDependencies;$(ResolveReferencesDependsOn)</ResolveReferencesDependsOn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="ModuleContracts">
+      <HintPath>..\ModuleContracts\bin\$(Configuration)\$(TargetFramework)\ModuleContracts.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="ModuleEngine">
+      <HintPath>..\ModuleEngine\bin\$(Configuration)\$(TargetFramework)\ModuleEngine.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <BuildProject Include="..\ModuleContracts\ModuleContracts.csproj" />
+    <BuildProject Include="..\ModuleEngine\ModuleEngine.csproj" />
+    <BuildProject Include="..\Plugins\CoreModule\CoreModule.csproj" />
+    <BuildProject Include="..\Plugins\LoggingModule\LoggingModule.csproj" />
+    <BuildProject Include="..\Plugins\ValidationModule\ValidationModule.csproj" />
+    <BuildProject Include="..\Plugins\ExportModule\ExportModule.csproj" />
+    <BuildProject Include="..\Plugins\ReportModule\ReportModule.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ModuleAssembly Include="..\Plugins\CoreModule\bin\$(Configuration)\$(TargetFramework)\CoreModule.dll" />
+    <ModuleAssembly Include="..\Plugins\LoggingModule\bin\$(Configuration)\$(TargetFramework)\LoggingModule.dll" />
+    <ModuleAssembly Include="..\Plugins\ValidationModule\bin\$(Configuration)\$(TargetFramework)\ValidationModule.dll" />
+    <ModuleAssembly Include="..\Plugins\ExportModule\bin\$(Configuration)\$(TargetFramework)\ExportModule.dll" />
+    <ModuleAssembly Include="..\Plugins\ReportModule\bin\$(Configuration)\$(TargetFramework)\ReportModule.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <Target Name="BuildDependencies" Condition="'$(DesignTimeBuild)' != 'true'">
+    <MSBuild Projects="@(BuildProject)"
+             Targets="Build"
+             Properties="Configuration=$(Configuration);TargetFramework=$(TargetFramework)" />
+  </Target>
+
+  <Target Name="CopyModulesToOutput" AfterTargets="Build" Condition="'$(DesignTimeBuild)' != 'true'">
+    <RemoveDir Directories="$(TargetDir)modules" />
+    <MakeDir Directories="$(TargetDir)modules" />
+    <Copy SourceFiles="@(ModuleAssembly)" DestinationFolder="$(TargetDir)modules" SkipUnchangedFiles="true" />
+  </Target>
+</Project>
